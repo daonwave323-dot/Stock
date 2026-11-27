@@ -20,7 +20,7 @@
 
 ## 데이터와 계산
 
-`data/` 의 JSON은 안드로이드 앱 원본(v2.7.0, `com.wongang.stocktools`)의 식과 자료로 계산했습니다.
+`data/` 의 JSON은 안드로이드 앱 원본(v2.7.0)의 식과 자료로 계산했습니다.
 
 - 특이점 점수 — `core/Singularity.kt` 그대로. 가중치 dd .30 / wrsi .20 / vixr .15 / gap .15 / drsi .10 / vixp .10,
   변환식(NDX는 낙폭 ÷12, SOX는 ÷20), 0~100 클램프, 결측 지표 제외 후 남은 가중치 합으로 나눔, 소수 1자리.
