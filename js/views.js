@@ -190,8 +190,17 @@
           '<p class="sub-line">다음 확인은 다음 거래일. <a href="#/rebalance">표 보기 →</a></p>';
       } else {
         var h = hits[0];
-        todo = '<p class="big-line todo-bad">' + esc(h.sym || '이름 없음') + ' ' + F.signed(h.drift, 1) + '%p 이탈 — ' +
-          (h.qtyDelta < 0 ? Math.abs(h.qtyDelta) + '주 매도 쪽' : h.qtyDelta > 0 ? h.qtyDelta + '주 매수 쪽' : '금액 조정') + '</p>' +
+        var way;
+        if ((h.sym || '').trim().toUpperCase() === 'CASH') {
+          way = F.int(Math.abs(h.diffValue)) + '원 ' + (h.diffValue > 0 ? '늘리는 쪽' : '줄이는 쪽');
+        } else if (h.qtyDelta < 0) {
+          way = Math.abs(h.qtyDelta) + '주 매도 쪽';
+        } else if (h.qtyDelta > 0) {
+          way = h.qtyDelta + '주 매수 쪽';
+        } else {
+          way = '금액 조정';
+        }
+        todo = '<p class="big-line todo-bad">' + esc(h.sym || '이름 없음') + ' ' + F.signed(h.drift, 1) + '%p 이탈 — ' + way + '</p>' +
           '<p class="sub-line">밴드 ±' + F.num(pf.band) + '%p · 이탈 ' + pf.out + '종목 · <a href="#/rebalance">수량 보기 →</a></p>';
       }
     }
@@ -918,8 +927,15 @@
         }
         if (q('band')) q('band').innerHTML = r.isOut ? '<span class="badge amber">이탈</span>' : '<span class="badge good">안</span>';
         if (q('qtyd')) {
-          q('qtyd').innerHTML = r.qtyDelta === 0 ? '<span class="dim">0</span>' :
-            '<b class="' + (r.qtyDelta > 0 ? 'pos' : 'neg') + '">' + F.int(r.qtyDelta) + '</b>';
+          var isCash = (r.sym || '').trim().toUpperCase() === 'CASH';
+          if (isCash) {
+            q('qtyd').innerHTML = r.isOut
+              ? '<b class="' + (r.diffValue > 0 ? 'pos' : 'neg') + '">' + F.int(r.diffValue) + '</b><span class="dim small"> 원</span>'
+              : '<span class="dim">0</span>';
+          } else {
+            q('qtyd').innerHTML = r.qtyDelta === 0 ? '<span class="dim">0</span>' :
+              '<b class="' + (r.qtyDelta > 0 ? 'pos' : 'neg') + '">' + F.int(r.qtyDelta) + '</b>';
+          }
         }
       });
       el('#sumBox', view).innerHTML =
